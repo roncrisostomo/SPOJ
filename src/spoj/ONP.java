@@ -7,6 +7,9 @@
  * 
  * @par [explanation]
  *      Transform the input algebraic expression into RPN form (Reverse Polish Notation).
+ *		Input format:
+ *			Line 1 - [Number of expressions]
+ *			Line 2+ - [Expression] (one per line)
  *		Test values:
  *			Input:
  *			3

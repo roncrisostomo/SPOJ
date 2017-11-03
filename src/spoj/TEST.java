@@ -8,17 +8,18 @@
  * @par [explanation]
  *		Rewrite small numbers (1-2 digits) from input to output.
  *		Stop processing input after reading in the number 42.
+ *		Test values:
  *			Input:
-*			1
-*			2
-*			88
-*			42
-*			99
-*			
-*			Output:
-*			1
-*			2
-*			88
+ *			1
+ *			2
+ *			88
+ *			42
+ *			99
+ *			
+ *			Output:
+ *			1
+ *			2
+ *			88
  */
 
 package spoj;
