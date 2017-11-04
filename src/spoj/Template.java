@@ -2,19 +2,22 @@
  * @file       	Template.java
  * @brief      	Solution for Template - ?
  * @author     	Ron
- * @created 	November 1, 2017
- * @modified   	November 1, 2017
+ * @created 	
+ * @modified   	
  *      
  * @par [explanation]
  * 
  *		Input format:
  *			
- *		Test values:
- *			Input:
- *			
- * 
- *			Output:
- *			
+ */
+
+/*
+Test values:
+Input:
+
+
+Output:
+
  */
 
 package spoj;
@@ -24,15 +27,25 @@ import java.util.Scanner;
 /**
  * Class for solving SPOJ Template.
  */
-public class Template
+public class Template implements Solver
 {
     /**
-     * Runs the solution for Template.
+     * Reads the input for Template.
      */
-    public void run()
+	@Override
+	public void readInput()
     {
         // Read system input
         Scanner in = new Scanner(System.in);
         
     }
+	
+	/**
+     * Runs the solution for Template.
+     */
+	@Override
+    public void solve()
+	{
+		
+	}
 }

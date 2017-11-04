@@ -3,66 +3,88 @@
  * @brief      	Solution for ONP - Transform the Expression
  * @author     	Ron
  * @created 	November 1, 2017
- * @modified   	November 1, 2017
+ * @modified   	November 4, 2017
  * 
  * @par [explanation]
  *      Transform the input algebraic expression into RPN form (Reverse Polish Notation).
  *		Input format:
  *			Line 1 - [Number of expressions]
  *			Line 2+ - [Expression] (one per line)
- *		Test values:
- *			Input:
- *			3
- *			(a+(b*c))
- *			((a+b)*(z+x))
- *			((a+t)*((b+(a+c))^(c+d)))
- *  
- *			Output:
- *			abc*+
- *			ab+zx+*
- *			at+bac++cd+^*
+ */
+
+/*
+Test values:
+Input:
+3
+(a+(b*c))
+((a+b)*(z+x))
+((a+t)*((b+(a+c))^(c+d)))
+
+Output:
+abc*+
+ab+zx+*
+at+bac++cd+^*
  */
 
 package spoj;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
 
 /**
  * Class for solving SPOJ ONP.
  */
-public class ONP
+public class ONP implements Solver
 {
     private static final int MAX_EXPRESSIONS = 100;
     private static final int MAX_EXPRESSION_LENGTH = 400;
     
-    /**
-     * Runs the solution for ONP.
+	private int m_exprCount = 0;
+	private List<String> m_exprs = new ArrayList<>();
+	
+	// Reusable stringbuilder and stack for the toRPN function
+	private StringBuilder m_outputSB= new StringBuilder();
+	private Stack<Character> m_operatorStack = new Stack<>();
+	
+	/**
+     * Reads the input for ONP.
      */
-    public void run()
-    {
-        // Read system input
-        Scanner in = new Scanner(System.in);
+	@Override
+    public void readInput()
+	{
+		// Read system input
+		Scanner in = new Scanner(System.in);
         // Read number of expressions
-        int exprCount = 0;
         if (in.hasNextInt())
         {
-            exprCount = in.nextInt();
+            m_exprCount = in.nextInt();
 			// Limit number of expressions
-            if (exprCount <= 0 || exprCount > MAX_EXPRESSIONS)
+            if (m_exprCount <= 0 || m_exprCount > MAX_EXPRESSIONS)
             {
                 return;
             }
             in.nextLine();
         }
-        // Initialize stringbuilder and stack to be used for the toRPN function
-        StringBuilder outputSB = new StringBuilder();
-        Stack<Character> operatorStack = new Stack<>();
-        // Read the next exprCount lines, or until a line that doesn't follow
-        //  the input format is encountered
-        while (exprCount > 0)
+		// Add the next m_exprCount lines to an expression list
+		for (int exprNo = 0; exprNo < m_exprCount; ++exprNo)
         {
-            String expr = in.nextLine();
+			String expr = in.nextLine();
+			m_exprs.add(expr);
+		}
+	}
+	
+    /**
+     * Runs the solution for ONP.
+     */
+	@Override
+    public void solve()
+    {
+        // Read the next m_exprCount lines, or until a line that doesn't follow
+        //  the input format is encountered
+        for (String expr : m_exprs)
+        {
 			// Limit expression length
             if (expr.length() <= 0 ||
                 expr.length() > MAX_EXPRESSION_LENGTH)
@@ -70,36 +92,20 @@ public class ONP
                 return;
             }
             // Reset stringbuilder and stack for reuse
-            outputSB.setLength(0);
-            operatorStack.clear();
+            m_outputSB.setLength(0);
+            m_operatorStack.clear();
             // Convert the line from input to RPN form
-            String rpn = toRPN(expr, outputSB, operatorStack);
+            String rpn = toRPN(expr);
             System.out.println(rpn);
-            exprCount--;
         }
     }
 
     /**
      * Converts the given string to Reverse Polish Notation.
-     * @param expr
+     * @param expr Expression to convert to RPN.
      * @return RPN form of expr
      */
     public String toRPN(String expr)
-    {
-        StringBuilder outputSB = new StringBuilder();
-        Stack<Character> operatorStack = new Stack<>();
-        return toRPN(expr, outputSB, operatorStack);
-    }
-    
-    /**
-     * Converts the given string to Reverse Polish Notation.
-     * Note: This overload allows reusing StringBuilder and Stack for multiple toRPN calls.
-     * @param expr Expression to convert to RPN.
-     * @param outputSB
-     * @param operatorStack
-     * @return RPN form of expr
-     */
-    public String toRPN(String expr, StringBuilder outputSB, Stack<Character> operatorStack)
     {
         // Shunting Yard algorithm (from Wikipedia)
 		// while there are tokens to be read:
@@ -110,23 +116,23 @@ public class ONP
 			// if the token is a number, then:
             if (isNumeric(c))
             {
-                outputSB.append(c);
+                m_outputSB.append(c);
             }
 			// if the token is an operator, then:
             else if (isOperator(c))
             {
                 Operator curOp = getOperatorType(c);
                 int curOpPrec = getPrecedence(curOp);
-                while (!operatorStack.empty())
+                while (!m_operatorStack.empty())
                 {
 					// while there is an operator at the top of the operator stack
-                    Character top = operatorStack.peek();
+                    Character top = m_operatorStack.peek();
                     Operator topOp = getOperatorType(top);
 					// with greater than or equal to precedence and the operator is left associative
                     if (getPrecedence(topOp) >= curOpPrec && isLeftAssociative(topOp))
                     {
 						// pop operators from the operator stack, onto the output queue.
-                        outputSB.append(operatorStack.pop());
+                        m_outputSB.append(m_operatorStack.pop());
                     }
                     else
                     {
@@ -134,40 +140,40 @@ public class ONP
                     }
                 }
 				// push the read operator onto the operator stack.
-                operatorStack.add(c);
+                m_operatorStack.add(c);
             }
 			// if the token is a left bracket (i.e. "("), then:
             else if (c == '(')
             {
 				// push it onto the operator stack.
-                operatorStack.add(c);
+                m_operatorStack.add(c);
             }
 			// if the token is a right bracket (i.e. ")"), then:
             else if (c == ')')
             {
 				// while the operator at the top of the operator stack is not a left bracket:
-                while (!operatorStack.isEmpty() && operatorStack.peek() != '(')
+                while (!m_operatorStack.isEmpty() && m_operatorStack.peek() != '(')
                 {
 					// pop operators from the operator stack onto the output queue.
-                    outputSB.append(operatorStack.pop());
+                    m_outputSB.append(m_operatorStack.pop());
                 }
 				// pop the left bracket from the stack.
-                operatorStack.pop();
+                m_operatorStack.pop();
                 /* if the stack runs out without finding a left bracket, then there are
                 mismatched parentheses. */
             }
         }
 		// if there are no more tokens to read:
 		// while there are still operator tokens on the stack:
-        while (!operatorStack.isEmpty())
+        while (!m_operatorStack.isEmpty())
         {
             /* if the operator token on the top of the stack is a bracket, then
             there are mismatched parentheses. */
 			// pop the operator onto the output queue.
-            outputSB.append(operatorStack.pop());
+            m_outputSB.append(m_operatorStack.pop());
         }
 		// exit
-        return outputSB.toString();
+        return m_outputSB.toString();
     }
 
     /**

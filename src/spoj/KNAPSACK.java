@@ -3,7 +3,7 @@
  * @brief      	Solution for KNAPSACK - The Knapsack Problem
  * @author     	Ron
  * @created 	November 1, 2017
- * @modified   	November 3, 2017
+ * @modified   	November 4, 2017
  *      
  * @par [explanation]
  *		You are packing for a vacation, but have limited space in your knapsack.
@@ -11,17 +11,20 @@
  *		Input format:
  *			Line 1 - [Knapsack capacity] [Number of potential items to bring]
  *			Line 2+ - [Item size] [Item value] (one item per line)
- *		Test values:
- *			Input:
- *			4 5
- *			1 8
- *			2 4
- *			3 0
- *			2 5
- *			2 3
- * 
- *			Output:
- *			13
+ */
+
+/*
+Test values:
+Input:
+4 5
+1 8
+2 4
+3 0
+2 5
+2 3
+
+Output:
+13
  */
 
 package spoj;
@@ -33,34 +36,45 @@ import java.util.Scanner;
 /**
  * Class for solving SPOJ KNAPSACK.
  */
-public class KNAPSACK
+public class KNAPSACK implements Solver
 {
-    /**
-     * Runs the solution for KNAPSACK.
+	private List<Item> m_items = null;
+	private int m_capacity = 0;		// Knapsack size, S
+	private int	m_itemCount = 0;	// Number of items to choose from, N
+	
+	/**
+     * Reads the input for KNAPSACK.
      */
-    public void run()
-    {
+	@Override
+	public void readInput()
+	{
 		// Read system input
         Scanner in = new Scanner(System.in);
-		
-		// Read S and N from input
-        int S = in.nextInt();
-		int N = in.nextInt();
+		// Read capacity and item count from input
+        m_capacity = in.nextInt();
+		m_itemCount = in.nextInt();
 		in.nextLine();
-		// Create list of N Items
-		List<Item> items = new ArrayList<>(N);
+		// Create list of m_itemCount Items
+		m_items = new ArrayList<>(m_itemCount);
 		// Read all N items from input
-		for (int itemNo = 0; itemNo < N; ++itemNo)
+		for (int itemNo = 0; itemNo < m_itemCount; ++itemNo)
 		{
 			Item newItem = new Item();
 			newItem.size = in.nextInt();
 			newItem.value = in.nextInt();
-			items.add(newItem);
+			m_items.add(newItem);
 			in.nextLine();
 		}
-		// Solve
-		int maxV = solveKnapsack(items, S, N - 1);
-//		int maxV = solveKnapsack_dp(items, S, N);
+	}
+	
+    /**
+     * Runs the solution for KNAPSACK.
+     */
+	@Override
+    public void solve()
+    {
+		int maxV = solveKnapsack(m_items, m_capacity, m_itemCount - 1);
+//		int maxV = solveKnapsack_dp(m_items, m_capacity, m_itemCount);
 		System.out.println(maxV);
     }
 	
